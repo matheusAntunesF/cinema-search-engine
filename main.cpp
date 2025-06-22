@@ -24,11 +24,8 @@ int main()
     // Base de dados na memoria, arquivo nao e mais necessario
     arquivoBaseCinema.close();
     vector<Cinema> cinemas;
+    cinemas.reserve(400);
     tratarBaseCinema(baseCinema, cinemas);
-
-    for(Cinema cinema : cinemas){
-        cout << cinema;
-    }
 
     return 0;
 }
