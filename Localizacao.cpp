@@ -2,8 +2,8 @@
 #include "Localizacao.hpp"
 using namespace std;
 
-Localizacao::Localizacao(){
-
+Localizacao::Localizacao()
+{
 }
 
 void Localizacao::setCoordenadaX(int coordenadaX)

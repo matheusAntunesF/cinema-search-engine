@@ -5,6 +5,7 @@
 #include <vector>
 #include "Localizacao.hpp"
 #include "Filme.hpp"
+#include <sstream>
 
 class Cinema
 {
@@ -13,7 +14,7 @@ private:
     std::string nome;
     Localizacao localizacao;
     float preco;
-    std::vector<Filme> filmes;
+    std::vector<unsigned int> idFilmes;
 
 public:
     void setId(unsigned int);
@@ -24,8 +25,11 @@ public:
     Localizacao getLocalizacao() const;
     void setPreco(float preco);
     float getPreco() const;
-    void setFilme(std::vector<Filme> filmes);
-    std::vector<Filme> getFilme() const;
+    void setIdFilmes(unsigned int idFilme);
+    std::vector<unsigned int> getIdFilmes() const;
+
+    friend std::istream& operator>>(std::istream& inputStream, Cinema& cinema);
+    friend std::ostream& operator<<(std::ostream& outputStream, Cinema& cinema);
 };
 
 #endif

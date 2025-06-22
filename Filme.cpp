@@ -2,27 +2,33 @@
 #include <iostream>
 using namespace std;
 
-void Filme::setId(unsigned int id){
+void Filme::setId(unsigned int id)
+{
     this->id = id;
 }
 
-unsigned int Filme::getId() const{
+unsigned int Filme::getId() const
+{
     return this->id;
 }
 
-void Filme::setTipo(string tipo){
+void Filme::setTipo(string tipo)
+{
     this->tipo = tipo;
 }
 
-string Filme::getTipo() const{
+string Filme::getTipo() const
+{
     return this->tipo;
 }
 
-void Filme::setTituloPrimario(string tituloPrimario){
+void Filme::setTituloPrimario(string tituloPrimario)
+{
     this->tituloPrimario = tituloPrimario;
 }
 
-string Filme::getTituloPrimario() const{
+string Filme::getTituloPrimario() const
+{
     return this->tituloPrimario;
 }
 

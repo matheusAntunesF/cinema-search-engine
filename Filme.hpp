@@ -14,7 +14,8 @@ private:
     unsigned short anoInicio;
     unsigned short anoFim;
     unsigned short duracao;
-    std::vector <std::string> genero;
+    std::vector<std::string> genero;
+
 public:
     void setId(unsigned int id);
     unsigned int getId() const;
@@ -32,7 +33,7 @@ public:
     unsigned short getAnoFim() const;
     void setDuracao(unsigned short duracao);
     unsigned short getDuracao() const;
-    void setGenero(std::vector <std::string> genero);
-    std::vector <std::string> getGenero() const;
+    void setGenero(std::vector<std::string> genero);
+    std::vector<std::string> getGenero() const;
 };
 #endif

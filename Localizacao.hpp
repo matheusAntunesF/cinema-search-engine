@@ -9,7 +9,7 @@ private:
 
 public:
     Localizacao();
-    
+
     void setCoordenadaX(int coordenadaX);
     void setCoordenadaY(int coordenadaY);
     int getCoordenadaX();
