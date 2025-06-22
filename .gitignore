@@ -1,8 +1,0 @@
-*.out
-*.o
-*.obj
-*.exe
-*.gitignore
-output/
-.vscode/
-build/
