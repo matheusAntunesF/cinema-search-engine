@@ -1,20 +1,23 @@
 #include <iostream>
-#include "Cinema.hpp"
-#include "Filme.hpp"
-#include "Localizacao.hpp"
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <chrono>
 
+#include "Cinema.hpp"
+#include "Filme.hpp"
+#include "Localizacao.hpp"
+#include "TabelaHashFilmesTipo.hpp"
+#include "Busca.hpp"
+
 using namespace std;
 
-void tratarBaseCinema(stringstream& baseCinema, vector<Cinema>& cinemas);
-void tratarBaseFilme(stringstream& baseFilme, vector<Filme>& filmes);
+void tratarBaseCinema(stringstream &baseCinema, vector<Cinema> &cinemas);
+void tratarBaseFilme(stringstream &baseFilme, vector<Filme> &filmes);
 
 int main()
 {
-    //Contando o tempo
+    // Contando o tempo
     auto start = chrono::high_resolution_clock::now();
     // Lendo base de dados de cinemas
     ifstream arquivoBaseCinema("base-de-dados/cinemas(1).txt");
@@ -33,7 +36,8 @@ int main()
 
     // Lendo base de dados de filmes
     ifstream arquivoBaseFilme("base-de-dados/filmesCrop.txt");
-    if(!arquivoBaseFilme.is_open()){
+    if (!arquivoBaseFilme.is_open())
+    {
         cout << "Erro! Nao foi possivel abrir o arquivo \"filmesCrop.txt\"";
         return 1;
     }
@@ -45,16 +49,58 @@ int main()
     filmes.reserve(1300000);
     tratarBaseFilme(baseFilme, filmes);
 
-    //Fim do tempo de carregamento da base de dados
+    // Fim do tempo de carregamento da base de dados
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> duracaoSeg = end - start;
 
-    cout << "Tempo de carregamento da base de dados: " << duracaoSeg.count();
 
+    TabelaHashFilmesTipo tabFilmesTipo(10*20);
+    for (unsigned int i = 0; i < filmes.size(); i++)
+    {
+        tabFilmesTipo.inserir(&filmes.at(i));
+    }
+    cout << "Tempo de carregamento da base de dados: " << duracaoSeg.count() << endl;
+    bool isTipo = 0;
+    /*
+    bool isGenero = 0;
+    bool isDuracao = 0;
+    bool isAno = 0;
+    */
+    Busca busca;
+    cout << "+------------------------------+" << endl
+         << "Filtros de busca (0 - false, 1 - true)" << endl
+         << "E por tipo? ";
+    cin >> isTipo;
+    busca.setIsTipo(isTipo);
+    if (isTipo)
+    {
+        cout << "Insira a quantidade de tipos: ";
+        int quantTipos;
+        string tipo;
+        cin >> quantTipos;
+        for (int i = 0; i < quantTipos; i++)
+        {
+            cout << "Insira o " << i+1 << "o tipo: ";
+            cin >> tipo;
+            busca.addTipo(tipo);
+        }
+    }
+    /*
+    cout << "E por Genero? ";
+    cin >> isGenero;
+    */
+    busca.setIsGenero(0);
+    busca.setIsDuracao(0);
+    busca.setIsAno(0);
+    list<Filme *> listaTipo = busca.buscaTipo(tabFilmesTipo);
+    for (Filme *filme : listaTipo)
+    {
+        cout << filme->getTipo();
+    }
     return 0;
 }
 
-void tratarBaseCinema(stringstream &baseCinema, vector<Cinema>& cinemas)
+void tratarBaseCinema(stringstream &baseCinema, vector<Cinema> &cinemas)
 {
     string linhaIgnorada;
     if (getline(baseCinema, linhaIgnorada))
@@ -62,34 +108,41 @@ void tratarBaseCinema(stringstream &baseCinema, vector<Cinema>& cinemas)
     }
 
     string linha;
-    while(getline(baseCinema, linha)){
-        if(linha.empty()){
+    while (getline(baseCinema, linha))
+    {
+        if (linha.empty())
+        {
             continue;
         }
         stringstream ssLinhaTemporaria(linha);
         Cinema cinema;
 
-        if(ssLinhaTemporaria >> cinema){
+        if (ssLinhaTemporaria >> cinema)
+        {
             cinemas.push_back(cinema);
         }
     }
 }
 
-void tratarBaseFilme(stringstream& baseFilme, vector<Filme>& filmes){
+void tratarBaseFilme(stringstream &baseFilme, vector<Filme> &filmes)
+{
     string linhaIgnorada;
     if (getline(baseFilme, linhaIgnorada))
     {
     }
 
     string linha;
-    while(getline(baseFilme, linha)){
-        if(linha.empty()){
+    while (getline(baseFilme, linha))
+    {
+        if (linha.empty())
+        {
             continue;
         }
         stringstream ssLinhaTemporaria(linha);
         Filme filme;
 
-        if(ssLinhaTemporaria >> filme){
+        if (ssLinhaTemporaria >> filme)
+        {
             filmes.push_back(filme);
         }
     }
