@@ -1,5 +1,9 @@
 #include "Filme.hpp"
 #include <iostream>
+#include <string>
+#include <sstream>
+#include <vector>
+#include "utilidades_string.hpp"
 using namespace std;
 
 void Filme::setId(unsigned int id)
@@ -87,7 +91,86 @@ void Filme::setGenero(std::vector<std::string> genero)
     this->genero = genero;
 }
 
-std::vector<std::string> Filme::getGenero() const
+vector<string> Filme::getGenero() const
 {
     return genero;
+}
+
+ostream &operator<<(std::ostream &outputStream, Filme &filme)
+{
+    outputStream << "ID: " << filme.getId() << endl
+                 << "Tipo: " << filme.getTipo() << endl
+                 << "Titulo Primario: " << filme.getTituloPrimario() << endl
+                 << "Titulo Original: " << filme.getTituloOriginal() << endl
+                 << "E adulto: " << filme.getIsAdult() << endl
+                 << "Ano Inicio: " << filme.getAnoInicio() << endl
+                 << "Ano Fim: " << filme.getAnoFim() << endl
+                 << "Duracao: " << filme.getDuracao() << endl;
+
+    cout << "Generos: ";
+    for (string genero : filme.getGenero())
+    {
+        outputStream << genero << "; ";
+    }
+    outputStream << endl;
+    return outputStream;
+}
+
+istream &operator>>(istream &inputStream, Filme &filme)
+{
+    string linha;
+
+    // Analisando linha por linha
+    if (getline(inputStream, linha))
+    {
+        stringstream isLinha(linha);
+
+        // Tratando todos os dados mais simples
+        string idCompletoFilme;
+        string tempTipo, tempTituloPrimario, tempTituloOriginal, tempIsAdult, tempAnoInicio, tempAnoFim, tempDuracao;
+
+        getline(isLinha, idCompletoFilme, '\t');
+        getline(isLinha, tempTipo, '\t');
+        getline(isLinha, tempTituloPrimario, '\t');
+        getline(isLinha, tempTituloOriginal, '\t');
+        getline(isLinha, tempIsAdult, '\t');
+        getline(isLinha, tempAnoInicio, '\t');
+        getline(isLinha, tempAnoFim, '\t');
+        getline(isLinha, tempDuracao, '\t');
+
+        filme.tipo = limpaString(tempTipo);
+        filme.tituloPrimario = limpaString(tempTituloPrimario);
+        filme.tituloOriginal = limpaString(tempTituloOriginal);
+        filme.isAdult = stoul(limpaString(tempIsAdult));
+        tempAnoInicio = limpaString(tempAnoInicio);
+        if(tempAnoInicio == "\\N"){
+            filme.anoInicio = 0;
+        } else{
+            filme.anoInicio = stoul(tempAnoInicio);
+        }
+        tempAnoFim = limpaString(tempAnoFim);
+        if(tempAnoFim == "\\N"){
+            filme.anoFim = 0;
+        } else{
+            filme.anoFim = stoul(tempAnoFim);
+        }
+        tempDuracao = limpaString(tempDuracao);
+        if(tempDuracao == "\\N"){
+            filme.duracao = 0;
+        } else{
+            filme.duracao = stoul(tempDuracao);
+        }
+
+        string idNumericoFilme = idCompletoFilme.substr(2);
+        filme.id = stoul(idNumericoFilme);
+        
+        // Tratando os dados dos generos dos filmes
+        string generoFilme;
+        while (getline(isLinha, generoFilme, ','))
+        {
+            filme.genero.push_back(generoFilme);
+        }
+    }
+
+    return inputStream;
 }

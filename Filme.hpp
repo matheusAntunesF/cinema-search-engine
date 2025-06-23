@@ -2,6 +2,7 @@
 #define FILME_HPP
 #include <string>
 #include <vector>
+#include <sstream>
 
 class Filme
 {
@@ -35,5 +36,8 @@ public:
     unsigned short getDuracao() const;
     void setGenero(std::vector<std::string> genero);
     std::vector<std::string> getGenero() const;
+
+    friend std::istream& operator>>(std::istream& inputStream, Filme& filme);
+    friend std::ostream& operator<<(std::ostream& outputStream, Filme& filme);
 };
 #endif
