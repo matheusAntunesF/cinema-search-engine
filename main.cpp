@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <chrono>
 
 using namespace std;
 
@@ -13,6 +14,8 @@ void tratarBaseFilme(stringstream& baseFilme, vector<Filme>& filmes);
 
 int main()
 {
+    //Contando o tempo
+    auto start = chrono::high_resolution_clock::now();
     // Lendo base de dados de cinemas
     ifstream arquivoBaseCinema("base-de-dados/cinemas(1).txt");
     if (!arquivoBaseCinema.is_open())
@@ -41,6 +44,12 @@ int main()
     vector<Filme> filmes;
     filmes.reserve(1300000);
     tratarBaseFilme(baseFilme, filmes);
+
+    //Fim do tempo de carregamento da base de dados
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duracaoSeg = end - start;
+
+    cout << "Tempo de carregamento da base de dados: " << duracaoSeg.count();
 
     return 0;
 }
