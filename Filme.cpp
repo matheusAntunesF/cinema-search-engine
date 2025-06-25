@@ -3,7 +3,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include "utilidades_string.hpp"
+#include "utilidades.hpp"
 using namespace std;
 
 void Filme::setId(unsigned int id)

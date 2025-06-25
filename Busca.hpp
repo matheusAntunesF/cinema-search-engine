@@ -6,6 +6,7 @@
 #include "Filme.hpp"
 #include "TabelaHashFilmesTipo.hpp"
 #include "TabelaHashFilmesGenero.hpp"
+#include "ListaFilmesOrdenada.hpp"
 
 class Busca
 {
@@ -57,13 +58,13 @@ public:
     void addTipo(const std::string &tipo);
     void addGenero(const std::string &genero);
 
-    void intersecionarListas(std::list<Filme *> &listaAuxiliar, std::list<Filme *> &listaFinal);
     // Métodos de buscas
     std::list<Filme *> buscaTipo(TabelaHashFilmesTipo &tabFilmesTipo);
     std::list<Filme *> buscaGenero(TabelaHashFilmesGenero &tabFilmesGenero);
+    std::list<Filme *> buscaDuracao(ListaFilmesOrdenada& filmesOrdDuracao);
 
     std::list<Filme *> busca(TabelaHashFilmesTipo &tabFilmesTipo,
-                             TabelaHashFilmesGenero &tabFilmesGenero);
+                             TabelaHashFilmesGenero &tabFilmesGenero, ListaFilmesOrdenada& filmesOrdDuracao);
 };
 
 #endif

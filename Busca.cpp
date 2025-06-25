@@ -3,6 +3,8 @@
 #include "Localizacao.hpp"
 #include "Filme.hpp"
 #include "TabelaHashFilmesTipo.hpp"
+#include "ListaFilmesOrdenada.hpp"
+#include "utilidades.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -153,24 +155,6 @@ void Busca::addGenero(const string &genero)
 
 // Métodos de buscas
 
-void Busca::intersecionarListas(list<Filme *> &listaAuxiliar, list<Filme *> &listaFinal)
-{
-    // Se uma das listas estiver vazia, a interseção é vazia.
-    if (listaAuxiliar.empty() || listaFinal.empty()) {
-        listaFinal.clear();
-        return;
-    }
-
-    // Set com os ponteiros da listaAuxiliar para busca rápida (O(log N)).
-    set<Filme*> setAuxiliar(listaAuxiliar.begin(), listaAuxiliar.end());
-
-    // Remover elementos baseados em uma condição.
-    listaFinal.remove_if([&](Filme* filmeDaListaFinal) {
-        // count() retorna 1 se o elemento existe, 0 caso contrário
-        return setAuxiliar.count(filmeDaListaFinal) == 0;
-    });
-}
-
 list<Filme *> Busca::buscaTipo(TabelaHashFilmesTipo &tabFilmesTipo)
 {
     list<Filme *> filmesTipo, listaAuxiliar;
@@ -191,38 +175,104 @@ list<Filme *> Busca::buscaGenero(TabelaHashFilmesGenero &tabFilmesGenero)
     {
         unsigned int hash = tabFilmesGenero.calcularHash(generos.at(pos));
         listaAuxiliar = tabFilmesGenero.buscar(hash);
-        if(pos == 0){  
+        if (pos == 0)
+        {
             filmesGenero.splice(filmesGenero.end(), listaAuxiliar);
-        } else{
-            intersecionarListas(listaAuxiliar, filmesGenero);
+        }
+        else
+        {
+            unirListas(listaAuxiliar, filmesGenero);
         }
     }
     return filmesGenero;
 }
 
+list<Filme *> Busca::buscaDuracao(ListaFilmesOrdenada &filmesOrdDuracao)
+{
+    int esquerda = 0;
+    int direita = filmesOrdDuracao.lista.size() - 1;
+    int iLimiteSuperior = -1;
+
+    while (esquerda <= direita)
+    {
+        int meio = esquerda + (direita - esquerda) / 2;
+        if (filmesOrdDuracao.lista.at(meio)->getDuracao() <= duracaoMax)
+        {
+            iLimiteSuperior = meio;
+            esquerda = meio + 1;
+        }
+        else
+        {
+            direita = meio - 1;
+        }
+    }
+    int iLimiteInferior = -1;
+    esquerda = 0;
+    if(iLimiteSuperior == -1){
+        return {};
+    }
+    direita = iLimiteSuperior;
+    while (esquerda <= direita)
+    {
+        int meio = esquerda + (direita - esquerda) / 2;
+        if (filmesOrdDuracao.lista.at(meio)->getDuracao() >= duracaoMin)
+        {
+            iLimiteInferior = meio;
+            direita = meio - 1;
+        }
+        else
+        {
+            esquerda = meio + 1;
+        }
+    }
+    if (iLimiteInferior != -1 && iLimiteInferior <= iLimiteSuperior)
+    {
+        return list<Filme *>(filmesOrdDuracao.lista.begin() + iLimiteInferior,
+                             filmesOrdDuracao.lista.begin() + iLimiteSuperior + 1);
+    }
+    return {};
+}
+
 list<Filme *> Busca::busca(TabelaHashFilmesTipo &tabFilmesTipo,
-                           TabelaHashFilmesGenero &tabFilmesGenero)
+                           TabelaHashFilmesGenero &tabFilmesGenero, ListaFilmesOrdenada& filmesOrdDuracao)
 {
     list<Filme *> listaFilmes, listaAuxiliar;
+    bool primeiroFiltroProcessado = false;
     if (isTipo)
     {
-        listaAuxiliar = buscaTipo(tabFilmesTipo);
-        if(listaFilmes.size() == 0){
-            listaFilmes.splice(listaFilmes.end(), listaAuxiliar);
-        } else {
-            intersecionarListas(listaAuxiliar, listaFilmes);
+        if(!primeiroFiltroProcessado){
+            listaFilmes = buscaTipo(tabFilmesTipo);
+            primeiroFiltroProcessado = true;
         }
-        listaAuxiliar.clear();
+        else{
+            listaAuxiliar = buscaTipo(tabFilmesTipo);
+            listaFilmes = intersecionarListas(listaFilmes, listaAuxiliar);
+            listaAuxiliar.clear();
+        }
     }
     if (isGenero)
     {
-        listaAuxiliar = buscaGenero(tabFilmesGenero);
-        if(listaFilmes.size() == 0){
-            listaFilmes.splice(listaFilmes.end(), listaAuxiliar);
-        } else{
-            intersecionarListas(listaAuxiliar, listaFilmes);
+        if(!primeiroFiltroProcessado){
+            listaFilmes = buscaGenero(tabFilmesGenero);
+            primeiroFiltroProcessado = true;
         }
-        listaAuxiliar.clear();
+        else{
+            listaAuxiliar = buscaGenero(tabFilmesGenero);
+            listaFilmes = intersecionarListas(listaFilmes, listaAuxiliar);
+            listaAuxiliar.clear();
+        }
+    }
+    if (isDuracao)
+    {
+        if(!primeiroFiltroProcessado){
+            listaFilmes = buscaDuracao(filmesOrdDuracao);
+            primeiroFiltroProcessado = true;
+        }
+        else{
+            listaAuxiliar = buscaDuracao(filmesOrdDuracao);
+            listaFilmes = intersecionarListas(listaFilmes, listaAuxiliar);
+            listaAuxiliar.clear();
+        }
     }
 
     return listaFilmes;

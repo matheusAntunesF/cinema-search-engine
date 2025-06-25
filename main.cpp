@@ -9,6 +9,7 @@
 #include "Localizacao.hpp"
 #include "TabelaHashFilmesTipo.hpp"
 #include "Busca.hpp"
+#include "ListaFilmesOrdenada.hpp"
 
 using namespace std;
 
@@ -62,6 +63,14 @@ int main()
     {
         tabFilmesGenero.inserir(&filmes.at(i));
     }
+
+    // Prepara estrutura auxiliar para busca por genero
+    ListaFilmesOrdenada filmesOrdDuracao(filmes.size());
+    for (unsigned int i = 0; i < filmes.size(); i++)
+    {
+        filmesOrdDuracao.inserir(&filmes.at(i));
+    }
+    filmesOrdDuracao.ordenar();
 
     // Fim do tempo de carregamento da base de dados
     auto end = chrono::high_resolution_clock::now();
@@ -119,9 +128,22 @@ int main()
                 }
             }
             break;
+            case 3:
+            {
+                busca.setIsDuracao(1);
+                cout << "Insira a duracao minima (min): ";
+                unsigned short duracaoMin, duracaoMax;
+                cin >> duracaoMin;
+                cout << "Insira a duracao maxima (min): ";
+                cin >> duracaoMax;
+                busca.setDuracaoMin(duracaoMin);
+                busca.setDuracaoMax(duracaoMax);
+                
+            }
+            break;
             case 5:
             {
-                list<Filme *> listaFilmes = busca.busca(tabFilmesTipo, tabFilmesGenero);
+                list<Filme *> listaFilmes = busca.busca(tabFilmesTipo, tabFilmesGenero, filmesOrdDuracao);
                 for (Filme *filme : listaFilmes)
                 {
                     cout << *filme;
@@ -132,62 +154,62 @@ int main()
             default:
                 break;
             }
-            /*
-            list<Filme *> listaTipo = busca.buscaTipo(tabFilmesTipo);
-            for (Filme *filme : listaTipo)
-            {
-                cout << filme->getTipo();
+                /*
+                list<Filme *> listaTipo = busca.buscaTipo(tabFilmesTipo);
+                for (Filme *filme : listaTipo)
+                {
+                    cout << filme->getTipo();
+                }
+                    */
             }
-                */
         }
+        return 0;
     }
-    return 0;
-}
 
-void tratarBaseCinema(stringstream &baseCinema, vector<Cinema> &cinemas)
-{
-    string linhaIgnorada;
-    if (getline(baseCinema, linhaIgnorada))
+    void tratarBaseCinema(stringstream & baseCinema, vector<Cinema> & cinemas)
     {
+        string linhaIgnorada;
+        if (getline(baseCinema, linhaIgnorada))
+        {
+        }
+
+        string linha;
+        while (getline(baseCinema, linha))
+        {
+            if (linha.empty())
+            {
+                continue;
+            }
+            stringstream ssLinhaTemporaria(linha);
+            Cinema cinema;
+
+            if (ssLinhaTemporaria >> cinema)
+            {
+                cinemas.push_back(cinema);
+            }
+        }
     }
 
-    string linha;
-    while (getline(baseCinema, linha))
+    void tratarBaseFilme(stringstream & baseFilme, vector<Filme> & filmes)
     {
-        if (linha.empty())
+        string linhaIgnorada;
+        if (getline(baseFilme, linhaIgnorada))
         {
-            continue;
         }
-        stringstream ssLinhaTemporaria(linha);
-        Cinema cinema;
 
-        if (ssLinhaTemporaria >> cinema)
+        string linha;
+        while (getline(baseFilme, linha))
         {
-            cinemas.push_back(cinema);
-        }
-    }
-}
+            if (linha.empty())
+            {
+                continue;
+            }
+            stringstream ssLinhaTemporaria(linha);
+            Filme filme;
 
-void tratarBaseFilme(stringstream &baseFilme, vector<Filme> &filmes)
-{
-    string linhaIgnorada;
-    if (getline(baseFilme, linhaIgnorada))
-    {
-    }
-
-    string linha;
-    while (getline(baseFilme, linha))
-    {
-        if (linha.empty())
-        {
-            continue;
-        }
-        stringstream ssLinhaTemporaria(linha);
-        Filme filme;
-
-        if (ssLinhaTemporaria >> filme)
-        {
-            filmes.push_back(filme);
+            if (ssLinhaTemporaria >> filme)
+            {
+                filmes.push_back(filme);
+            }
         }
     }
-}
