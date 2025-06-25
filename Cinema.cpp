@@ -31,7 +31,7 @@ void Cinema::setLocalizacao(Localizacao localizacao)
 
 Localizacao Cinema::getLocalizacao() const
 {
-    return Localizacao();
+    return localizacao;
 }
 
 void Cinema::setPreco(float preco)

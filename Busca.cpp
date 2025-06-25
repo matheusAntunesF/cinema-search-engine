@@ -1,15 +1,18 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <list>
+#include <set>
+
 #include "Busca.hpp"
 #include "Cinema.hpp"
 #include "Localizacao.hpp"
 #include "Filme.hpp"
 #include "TabelaHashFilmesTipo.hpp"
 #include "ListaFilmesOrdenada.hpp"
+#include "ListaCinemasOrdenada.hpp"
 #include "utilidades.hpp"
-#include <iostream>
-#include <string>
-#include <vector>
-#include <list>
-#include <set>
+#include "variaveis-globais.hpp"
 using namespace std;
 
 Busca::Busca()
@@ -22,19 +25,6 @@ Busca::Busca()
     duracaoMax = 0;
     anoMin = 0;
     anoMax = 0;
-}
-
-// Construtor sobrecarregado
-Busca::Busca(
-    bool isTipo,
-    bool isGenero,
-    bool isDuracao,
-    bool isAno)
-{
-    setIsTipo(isTipo);
-    setIsGenero(isGenero);
-    setIsDuracao(isDuracao);
-    setIsAno(isAno);
 }
 
 // Getters
@@ -89,6 +79,24 @@ unsigned short Busca::getAnoMax() const
     return this->anoMax;
 }
 
+float Busca::getPreco() const
+{
+    return preco;
+}
+bool Busca::getIsPreco() const
+{
+    return isPreco;
+}
+int Busca::getDistanciaMax() const
+{
+    return preco;
+}
+
+bool Busca::getIsDistancia() const
+{
+    return isDistancia;
+}
+
 // Setters
 
 void Busca::setIsTipo(bool isTipo)
@@ -139,6 +147,26 @@ void Busca::setAnoMin(unsigned short anoMin)
 void Busca::setAnoMax(unsigned short anoMax)
 {
     this->anoMax = anoMax;
+}
+
+void Busca::setIsPreco(bool isPreco)
+{
+    this->isPreco = isPreco;
+}
+
+void Busca::setPrecoMax(float precoMax)
+{
+    this->precoMax = precoMax;
+}
+
+void Busca::setIsDistancia(bool isDistancia)
+{
+    this->isDistancia = isDistancia;
+}
+
+void Busca::setDistanciaMax(int distanciaMax)
+{
+    this->distanciaMax = distanciaMax;
 }
 
 // --- Métodos de Conveniência ---
@@ -332,6 +360,60 @@ list<Filme *> Busca::buscaAnoFim(ListaFilmesOrdenada &filmesOrdAnoFim)
     return {};
 }
 
+std::list<Cinema *> Busca::buscaPreco(ListaCinemasOrdenada &cinemasOrdPreco)
+{
+    int esquerda = 0;
+    int direita = cinemasOrdPreco.lista.size() - 1;
+    int iLimiteSuperior = -1;
+
+    while (esquerda <= direita)
+    {
+        int meio = esquerda + (direita - esquerda) / 2;
+        if (cinemasOrdPreco.lista.at(meio)->getPreco() <= precoMax)
+        {
+            iLimiteSuperior = meio;
+            esquerda = meio + 1;
+        }
+        else
+        {
+            direita = meio - 1;
+        }
+    }
+    if (iLimiteSuperior != -1)
+    {
+        return list<Cinema *>(cinemasOrdPreco.lista.begin(),
+                              cinemasOrdPreco.lista.begin() + iLimiteSuperior + 1);
+    }
+    return {};
+}
+
+std::list<Cinema *> Busca::buscaDistancia(ListaCinemasOrdenada &cinemasOrdDistancia)
+{
+    int esquerda = 0;
+    int direita = cinemasOrdDistancia.lista.size() - 1;
+    int iLimiteSuperior = -1;
+
+    while (esquerda <= direita)
+    {
+        int meio = esquerda + (direita - esquerda) / 2;
+        if (cinemasOrdDistancia.lista.at(meio)->getLocalizacao().distancia(meuLocal) <= distanciaMax)
+        {
+            iLimiteSuperior = meio;
+            esquerda = meio + 1;
+        }
+        else
+        {
+            direita = meio - 1;
+        }
+    }
+    if (iLimiteSuperior != -1)
+    {
+        return list<Cinema *>(cinemasOrdDistancia.lista.begin(),
+                              cinemasOrdDistancia.lista.begin() + iLimiteSuperior + 1);
+    }
+    return {};
+}
+
 list<Filme *> Busca::busca(TabelaHashFilmesTipo &tabFilmesTipo,
                            TabelaHashFilmesGenero &tabFilmesGenero, ListaFilmesOrdenada &filmesOrdDuracao,
                            ListaFilmesOrdenada &filmesOrdAnoInicio, ListaFilmesOrdenada &filmesOrdAnoFim)
@@ -399,4 +481,39 @@ list<Filme *> Busca::busca(TabelaHashFilmesTipo &tabFilmesTipo,
     }
 
     return listaFilmes;
+}
+
+std::list<Cinema*> Busca::buscaCinema(TabelaHashFilmesTipo &tabFilmesTipo, TabelaHashFilmesGenero &tabFilmesGenero,
+                                      ListaFilmesOrdenada &filmesOrdDuracao, ListaFilmesOrdenada &filmesOrdAnoInicio, ListaFilmesOrdenada &filmesOrdAnoFim,
+                                      ListaCinemasOrdenada &cinemasOrdPreco, ListaCinemasOrdenada &cinemasOrdDistancia)
+{
+    list<Cinema *> listaCinemas, listaAuxiliar;
+    bool primeiroFiltroProcessado = false;
+    if (isPreco)
+    {
+        listaAuxiliar = buscaPreco(cinemasOrdPreco);
+        if (!primeiroFiltroProcessado)
+        {
+            listaCinemas.swap(listaAuxiliar);
+            primeiroFiltroProcessado = true;
+        }
+        else{
+            listaCinemas = intersecionarListasCinemas(listaCinemas, listaAuxiliar);
+        }
+        listaAuxiliar.clear();
+    }
+    if (isDistancia)
+    {
+        listaAuxiliar = buscaDistancia(cinemasOrdDistancia);
+        if (!primeiroFiltroProcessado)
+        {
+            listaCinemas.swap(listaAuxiliar);
+            primeiroFiltroProcessado = true;
+        }
+        else{
+            listaCinemas = intersecionarListasCinemas(listaCinemas, listaAuxiliar);
+        }
+        listaAuxiliar.clear();
+    }
+    return listaCinemas;
 }

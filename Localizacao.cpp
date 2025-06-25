@@ -6,27 +6,35 @@ Localizacao::Localizacao()
 {
 }
 
-void Localizacao::setCoordenadaX(int coordenadaX)
+Localizacao::Localizacao(long long int coordenadaX, long long int coordenadaY)
+{
+    setCoordenadaX(coordenadaX);
+    setCoordenadaY(coordenadaY);
+}
+
+void Localizacao::setCoordenadaX(long long int coordenadaX)
 {
     this->coordenadaX = coordenadaX;
 }
-void Localizacao::setCoordenadaY(int coordenadaY)
+void Localizacao::setCoordenadaY(long long int coordenadaY)
 {
     this->coordenadaY = coordenadaY;
 }
-int Localizacao::getCoordenadaX()
+long long int Localizacao::getCoordenadaX()
 {
     return coordenadaX;
 }
-int Localizacao::getCoordenadaY()
+long long int Localizacao::getCoordenadaY()
 {
     return coordenadaY;
 }
 
-unsigned int Localizacao::distancia(Localizacao local2)
+long long int Localizacao::distancia(Localizacao& local2)
 {
-    unsigned int temp1 = pow((local2.getCoordenadaX() - this->coordenadaX), 2);
-    unsigned int temp2 = pow((local2.getCoordenadaY() - this->coordenadaY), 2);
+    long long int temp1 = local2.getCoordenadaX() - this->coordenadaX;
+    temp1 = temp1 * temp1;
+    long long int temp2 = local2.getCoordenadaY() - this->coordenadaY;
+    temp2 = temp2*temp2;
 
     return sqrt(temp1 + temp2);
 }

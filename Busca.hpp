@@ -4,9 +4,11 @@
 #include <string>
 #include <list>
 #include "Filme.hpp"
+#include "Cinema.hpp"
 #include "TabelaHashFilmesTipo.hpp"
 #include "TabelaHashFilmesGenero.hpp"
 #include "ListaFilmesOrdenada.hpp"
+#include "ListaCinemasOrdenada.hpp"
 
 class Busca
 {
@@ -21,14 +23,13 @@ private:
     bool isAno;
     unsigned short anoMin;
     unsigned short anoMax;
+    bool isPreco;
+    float precoMax;
+    bool isDistancia;
+    int distanciaMax;
 
 public:
     Busca();
-    Busca(
-        bool IsTipo,
-        bool IsGenero,
-        bool IsDuracao,
-        bool IsAno);
 
     // Getters
     bool getIsTipo() const;
@@ -41,6 +42,10 @@ public:
     bool getIsAno() const;
     unsigned short getAnoMin() const;
     unsigned short getAnoMax() const;
+    float getPreco() const;
+    bool getIsPreco() const;
+    int getDistanciaMax() const;
+    bool getIsDistancia() const;
 
     // Setters
     void setIsTipo(bool isTipo);
@@ -53,6 +58,10 @@ public:
     void setIsAno(bool isAno);
     void setAnoMin(unsigned short anoInicio);
     void setAnoMax(unsigned short anoFim);
+    void setIsPreco(bool isPreco);
+    void setPrecoMax(float precoMax);
+    void setIsDistancia(bool isDistancia);
+    void setDistanciaMax(int distanciaMax);
 
     // -- Métodos de conveniência ---
     void addTipo(const std::string &tipo);
@@ -65,9 +74,16 @@ public:
     std::list<Filme *> buscaAnoInicio(ListaFilmesOrdenada &filmesOrdAnoInicio);
     std::list<Filme *> buscaAnoFim(ListaFilmesOrdenada &filmesOrdDuracao);
 
+    std::list<Cinema *> buscaPreco(ListaCinemasOrdenada &cinemasOrdPreco);
+    std::list<Cinema *> buscaDistancia(ListaCinemasOrdenada &cinemasOrdDistancia);
+
     std::list<Filme *> busca(TabelaHashFilmesTipo &tabFilmesTipo,
                              TabelaHashFilmesGenero &tabFilmesGenero, ListaFilmesOrdenada &filmesOrdDuracao,
-                            ListaFilmesOrdenada& filmesOrdAnoInicio, ListaFilmesOrdenada& filmesOrdAnoFim);
+                             ListaFilmesOrdenada &filmesOrdAnoInicio, ListaFilmesOrdenada &filmesOrdAnoFim);
+    std::list<Cinema *> buscaCinema(TabelaHashFilmesTipo &tabFilmesTipo,
+                                    TabelaHashFilmesGenero &tabFilmesGenero, ListaFilmesOrdenada &filmesOrdDuracao,
+                                    ListaFilmesOrdenada &filmesOrdAnoInicio, ListaFilmesOrdenada &filmesOrdAnoFim,
+                                    ListaCinemasOrdenada &cinemasOrdPreco, ListaCinemasOrdenada &cinemasOrdDistancia);
 };
 
 #endif

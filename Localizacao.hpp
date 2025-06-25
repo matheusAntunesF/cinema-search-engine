@@ -4,17 +4,18 @@
 class Localizacao
 {
 private:
-    int coordenadaX;
-    int coordenadaY;
+    long long int coordenadaX;
+    long long int coordenadaY;
 
 public:
     Localizacao();
+    Localizacao(long long int coordenadaX, long long int coordenadaY);
 
-    void setCoordenadaX(int coordenadaX);
-    void setCoordenadaY(int coordenadaY);
-    int getCoordenadaX();
-    int getCoordenadaY();
+    void setCoordenadaX(long long int coordenadaX);
+    void setCoordenadaY(long long int coordenadaY);
+    long long int getCoordenadaX();
+    long long int getCoordenadaY();
 
-    unsigned int distancia(Localizacao local2);
+    long long int distancia(Localizacao& local2);
 };
 #endif
