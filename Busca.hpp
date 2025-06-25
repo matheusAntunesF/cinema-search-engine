@@ -19,8 +19,8 @@ private:
     unsigned short duracaoMin;
     unsigned short duracaoMax;
     bool isAno;
-    unsigned short anoInicio;
-    unsigned short anoFim;
+    unsigned short anoMin;
+    unsigned short anoMax;
 
 public:
     Busca();
@@ -39,8 +39,8 @@ public:
     unsigned short getDuracaoMin() const;
     unsigned short getDuracaoMax() const;
     bool getIsAno() const;
-    unsigned short getAnoInicio() const;
-    unsigned short getAnoFim() const;
+    unsigned short getAnoMin() const;
+    unsigned short getAnoMax() const;
 
     // Setters
     void setIsTipo(bool isTipo);
@@ -51,8 +51,8 @@ public:
     void setDuracaoMin(unsigned short duracaoMin);
     void setDuracaoMax(unsigned short duracaoMax);
     void setIsAno(bool isAno);
-    void setAnoInicio(unsigned short anoInicio);
-    void setAnoFim(unsigned short anoFim);
+    void setAnoMin(unsigned short anoInicio);
+    void setAnoMax(unsigned short anoFim);
 
     // -- Métodos de conveniência ---
     void addTipo(const std::string &tipo);
@@ -61,10 +61,13 @@ public:
     // Métodos de buscas
     std::list<Filme *> buscaTipo(TabelaHashFilmesTipo &tabFilmesTipo);
     std::list<Filme *> buscaGenero(TabelaHashFilmesGenero &tabFilmesGenero);
-    std::list<Filme *> buscaDuracao(ListaFilmesOrdenada& filmesOrdDuracao);
+    std::list<Filme *> buscaDuracao(ListaFilmesOrdenada &filmesOrdDuracao);
+    std::list<Filme *> buscaAnoInicio(ListaFilmesOrdenada &filmesOrdAnoInicio);
+    std::list<Filme *> buscaAnoFim(ListaFilmesOrdenada &filmesOrdDuracao);
 
     std::list<Filme *> busca(TabelaHashFilmesTipo &tabFilmesTipo,
-                             TabelaHashFilmesGenero &tabFilmesGenero, ListaFilmesOrdenada& filmesOrdDuracao);
+                             TabelaHashFilmesGenero &tabFilmesGenero, ListaFilmesOrdenada &filmesOrdDuracao,
+                            ListaFilmesOrdenada& filmesOrdAnoInicio, ListaFilmesOrdenada& filmesOrdAnoFim);
 };
 
 #endif

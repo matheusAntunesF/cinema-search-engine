@@ -2,6 +2,8 @@
 #include <string>
 #include <algorithm>
 #include "utilidades.hpp"
+#include "CriterioComparacao.hpp"
+#include "Filme.hpp"
 using namespace std;
 ListaFilmesOrdenada::ListaFilmesOrdenada()
 {
@@ -16,14 +18,7 @@ void ListaFilmesOrdenada::inserir(Filme *filme)
     lista.push_back(filme);
 }
 
-void ListaFilmesOrdenada::ordenar()
+void ListaFilmesOrdenada::ordenar(CriterioComparacao criterio)
 {
-    quickSort(lista, 0, lista.size() - 1);
-    /*
-    sort(lista.begin(), lista.end(), [](const Filme *a, const Filme *b)
-         {
-    // A lambda recebe dois ponteiros para Filme como argumentos.
-    // Retorna 'true' se 'a' deve vir ANTES de 'b' na ordenação.
-    return a->getDuracao() < b->getDuracao(); });
-*/
+    quickSortFilmes(lista, 0, lista.size() - 1, criterio);
 }

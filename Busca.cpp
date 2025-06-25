@@ -20,8 +20,8 @@ Busca::Busca()
     isAno = 0;
     duracaoMin = 0;
     duracaoMax = 0;
-    anoInicio = 0;
-    anoFim = 0;
+    anoMin = 0;
+    anoMax = 0;
 }
 
 // Construtor sobrecarregado
@@ -79,14 +79,14 @@ bool Busca::getIsAno() const
     return this->isAno;
 }
 
-unsigned short Busca::getAnoInicio() const
+unsigned short Busca::getAnoMin() const
 {
-    return this->anoInicio;
+    return this->anoMin;
 }
 
-unsigned short Busca::getAnoFim() const
+unsigned short Busca::getAnoMax() const
 {
-    return this->anoFim;
+    return this->anoMax;
 }
 
 // Setters
@@ -131,14 +131,14 @@ void Busca::setIsAno(bool isAno)
     this->isAno = isAno;
 }
 
-void Busca::setAnoInicio(unsigned short anoInicio)
+void Busca::setAnoMin(unsigned short anoMin)
 {
-    this->anoInicio = anoInicio;
+    this->anoMin = anoMin;
 }
 
-void Busca::setAnoFim(unsigned short anoFim)
+void Busca::setAnoMax(unsigned short anoMax)
 {
-    this->anoFim = anoFim;
+    this->anoMax = anoMax;
 }
 
 // --- Métodos de Conveniência ---
@@ -181,7 +181,7 @@ list<Filme *> Busca::buscaGenero(TabelaHashFilmesGenero &tabFilmesGenero)
         }
         else
         {
-            unirListas(listaAuxiliar, filmesGenero);
+            filmesGenero = unirListasFilmes(listaAuxiliar, filmesGenero);
         }
     }
     return filmesGenero;
@@ -208,7 +208,8 @@ list<Filme *> Busca::buscaDuracao(ListaFilmesOrdenada &filmesOrdDuracao)
     }
     int iLimiteInferior = -1;
     esquerda = 0;
-    if(iLimiteSuperior == -1){
+    if (iLimiteSuperior == -1)
+    {
         return {};
     }
     direita = iLimiteSuperior;
@@ -233,46 +234,168 @@ list<Filme *> Busca::buscaDuracao(ListaFilmesOrdenada &filmesOrdDuracao)
     return {};
 }
 
-list<Filme *> Busca::busca(TabelaHashFilmesTipo &tabFilmesTipo,
-                           TabelaHashFilmesGenero &tabFilmesGenero, ListaFilmesOrdenada& filmesOrdDuracao)
+list<Filme *> Busca::buscaAnoInicio(ListaFilmesOrdenada &filmesOrdAnoInicio)
 {
-    list<Filme *> listaFilmes, listaAuxiliar;
+    int esquerda = 0;
+    int direita = filmesOrdAnoInicio.lista.size() - 1;
+    int iLimiteSuperior = -1;
+
+    while (esquerda <= direita)
+    {
+        int meio = esquerda + (direita - esquerda) / 2;
+        if (filmesOrdAnoInicio.lista.at(meio)->getAnoInicio() <= anoMax)
+        {
+            if (filmesOrdAnoInicio.lista.at(meio)->getAnoInicio() != 0)
+                iLimiteSuperior = meio;
+            esquerda = meio + 1;
+        }
+        else
+        {
+            direita = meio - 1;
+        }
+    }
+    int iLimiteInferior = -1;
+    esquerda = 0;
+    if (iLimiteSuperior == -1)
+    {
+        return {};
+    }
+    direita = iLimiteSuperior;
+    while (esquerda <= direita)
+    {
+        int meio = esquerda + (direita - esquerda) / 2;
+        if (filmesOrdAnoInicio.lista.at(meio)->getAnoInicio() >= anoMin)
+        {
+            if (filmesOrdAnoInicio.lista.at(meio)->getAnoInicio() != 0)
+                iLimiteInferior = meio;
+            direita = meio - 1;
+        }
+        else
+        {
+            esquerda = meio + 1;
+        }
+    }
+    if (iLimiteInferior != -1 && iLimiteInferior <= iLimiteSuperior)
+    {
+        return list<Filme *>(filmesOrdAnoInicio.lista.begin() + iLimiteInferior,
+                             filmesOrdAnoInicio.lista.begin() + iLimiteSuperior + 1);
+    }
+    return {};
+}
+
+list<Filme *> Busca::buscaAnoFim(ListaFilmesOrdenada &filmesOrdAnoFim)
+{
+    int esquerda = 0;
+    int direita = filmesOrdAnoFim.lista.size() - 1;
+    int iLimiteSuperior = -1;
+
+    while (esquerda <= direita)
+    {
+        int meio = esquerda + (direita - esquerda) / 2;
+        if (filmesOrdAnoFim.lista.at(meio)->getAnoFim() <= anoMax)
+        {
+            if (filmesOrdAnoFim.lista.at(meio)->getAnoFim() != 0)
+                iLimiteSuperior = meio;
+            esquerda = meio + 1;
+        }
+        else
+        {
+            direita = meio - 1;
+        }
+    }
+    int iLimiteInferior = -1;
+    esquerda = 0;
+    if (iLimiteSuperior == -1)
+    {
+        return {};
+    }
+    direita = iLimiteSuperior;
+    while (esquerda <= direita)
+    {
+        int meio = esquerda + (direita - esquerda) / 2;
+        if (filmesOrdAnoFim.lista.at(meio)->getAnoFim() >= anoMin)
+        {
+            if (filmesOrdAnoFim.lista.at(meio)->getAnoFim() != 0)
+                iLimiteInferior = meio;
+            direita = meio - 1;
+        }
+        else
+        {
+            esquerda = meio + 1;
+        }
+    }
+    if (iLimiteInferior != -1 && iLimiteInferior <= iLimiteSuperior)
+    {
+        return list<Filme *>(filmesOrdAnoFim.lista.begin() + iLimiteInferior,
+                             filmesOrdAnoFim.lista.begin() + iLimiteSuperior + 1);
+    }
+    return {};
+}
+
+list<Filme *> Busca::busca(TabelaHashFilmesTipo &tabFilmesTipo,
+                           TabelaHashFilmesGenero &tabFilmesGenero, ListaFilmesOrdenada &filmesOrdDuracao,
+                           ListaFilmesOrdenada &filmesOrdAnoInicio, ListaFilmesOrdenada &filmesOrdAnoFim)
+{
+    list<Filme *> listaFilmes, listaAuxiliar, listaAuxiliar2;
     bool primeiroFiltroProcessado = false;
     if (isTipo)
     {
-        if(!primeiroFiltroProcessado){
+        if (!primeiroFiltroProcessado)
+        {
             listaFilmes = buscaTipo(tabFilmesTipo);
             primeiroFiltroProcessado = true;
         }
-        else{
+        else
+        {
             listaAuxiliar = buscaTipo(tabFilmesTipo);
-            listaFilmes = intersecionarListas(listaFilmes, listaAuxiliar);
+            listaFilmes = intersecionarListasFilmes(listaFilmes, listaAuxiliar);
             listaAuxiliar.clear();
         }
     }
     if (isGenero)
     {
-        if(!primeiroFiltroProcessado){
+        if (!primeiroFiltroProcessado)
+        {
             listaFilmes = buscaGenero(tabFilmesGenero);
             primeiroFiltroProcessado = true;
         }
-        else{
+        else
+        {
             listaAuxiliar = buscaGenero(tabFilmesGenero);
-            listaFilmes = intersecionarListas(listaFilmes, listaAuxiliar);
+            listaFilmes = intersecionarListasFilmes(listaFilmes, listaAuxiliar);
             listaAuxiliar.clear();
         }
     }
     if (isDuracao)
     {
-        if(!primeiroFiltroProcessado){
+        if (!primeiroFiltroProcessado)
+        {
             listaFilmes = buscaDuracao(filmesOrdDuracao);
             primeiroFiltroProcessado = true;
         }
-        else{
+        else
+        {
             listaAuxiliar = buscaDuracao(filmesOrdDuracao);
-            listaFilmes = intersecionarListas(listaFilmes, listaAuxiliar);
+            listaFilmes = intersecionarListasFilmes(listaFilmes, listaAuxiliar);
             listaAuxiliar.clear();
         }
+    }
+    if (isAno)
+    {
+        listaAuxiliar = buscaAnoInicio(filmesOrdAnoInicio);
+        listaAuxiliar2 = buscaAnoFim(filmesOrdAnoFim);
+        list<Filme *> listaAnoUnificada = unirListasFilmes(listaAuxiliar, listaAuxiliar2);
+        if (!primeiroFiltroProcessado)
+        {
+            listaFilmes.swap(listaAnoUnificada);
+            primeiroFiltroProcessado = true;
+        }
+        else
+        {
+            listaFilmes = intersecionarListasFilmes(listaFilmes, listaAnoUnificada);
+        }
+        listaAuxiliar.clear();
+        listaAuxiliar2.clear();
     }
 
     return listaFilmes;

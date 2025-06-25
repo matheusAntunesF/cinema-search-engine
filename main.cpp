@@ -10,6 +10,7 @@
 #include "TabelaHashFilmesTipo.hpp"
 #include "Busca.hpp"
 #include "ListaFilmesOrdenada.hpp"
+#include "CriterioComparacao.hpp"
 
 using namespace std;
 
@@ -64,13 +65,29 @@ int main()
         tabFilmesGenero.inserir(&filmes.at(i));
     }
 
-    // Prepara estrutura auxiliar para busca por genero
+    // Prepara estrutura auxiliar para busca por duracao
     ListaFilmesOrdenada filmesOrdDuracao(filmes.size());
     for (unsigned int i = 0; i < filmes.size(); i++)
     {
         filmesOrdDuracao.inserir(&filmes.at(i));
     }
-    filmesOrdDuracao.ordenar();
+    filmesOrdDuracao.ordenar(duracao);
+
+    // Prepara estrutura auxiliar para busca por ano inicio
+    ListaFilmesOrdenada filmesOrdAnoInicio(filmes.size());
+    for (unsigned int i = 0; i < filmes.size(); i++)
+    {
+        filmesOrdAnoInicio.inserir(&filmes.at(i));
+    }
+    filmesOrdAnoInicio.ordenar(anoInicio);
+
+    // Prepara estrutura auxiliar para busca por ano fim
+    ListaFilmesOrdenada filmesOrdAnoFim(filmes.size());
+    for (unsigned int i = 0; i < filmes.size(); i++)
+    {
+        filmesOrdAnoFim.inserir(&filmes.at(i));
+    }
+    filmesOrdAnoFim.ordenar(anoFim);
 
     // Fim do tempo de carregamento da base de dados
     auto end = chrono::high_resolution_clock::now();
@@ -138,12 +155,24 @@ int main()
                 cin >> duracaoMax;
                 busca.setDuracaoMin(duracaoMin);
                 busca.setDuracaoMax(duracaoMax);
-                
+            }
+            break;
+            case 4:
+            {
+                busca.setIsAno(1);
+                cout << "Insira o ano minimo: ";
+                unsigned short anoMin, anoMax;
+                cin >> anoMin;
+                cout << "Insira o ano maximo: ";
+                cin >> anoMax;
+                busca.setAnoMin(anoMin);
+                busca.setAnoMax(anoMax);
             }
             break;
             case 5:
             {
-                list<Filme *> listaFilmes = busca.busca(tabFilmesTipo, tabFilmesGenero, filmesOrdDuracao);
+                list<Filme *> listaFilmes = busca.busca(tabFilmesTipo, tabFilmesGenero,
+                                                        filmesOrdDuracao, filmesOrdAnoInicio, filmesOrdAnoFim);
                 for (Filme *filme : listaFilmes)
                 {
                     cout << *filme;
@@ -154,62 +183,62 @@ int main()
             default:
                 break;
             }
-                /*
-                list<Filme *> listaTipo = busca.buscaTipo(tabFilmesTipo);
-                for (Filme *filme : listaTipo)
-                {
-                    cout << filme->getTipo();
-                }
-                    */
+            /*
+            list<Filme *> listaTipo = busca.buscaTipo(tabFilmesTipo);
+            for (Filme *filme : listaTipo)
+            {
+                cout << filme->getTipo();
             }
+                */
         }
-        return 0;
     }
+    return 0;
+}
 
-    void tratarBaseCinema(stringstream & baseCinema, vector<Cinema> & cinemas)
+void tratarBaseCinema(stringstream &baseCinema, vector<Cinema> &cinemas)
+{
+    string linhaIgnorada;
+    if (getline(baseCinema, linhaIgnorada))
     {
-        string linhaIgnorada;
-        if (getline(baseCinema, linhaIgnorada))
-        {
-        }
-
-        string linha;
-        while (getline(baseCinema, linha))
-        {
-            if (linha.empty())
-            {
-                continue;
-            }
-            stringstream ssLinhaTemporaria(linha);
-            Cinema cinema;
-
-            if (ssLinhaTemporaria >> cinema)
-            {
-                cinemas.push_back(cinema);
-            }
-        }
     }
 
-    void tratarBaseFilme(stringstream & baseFilme, vector<Filme> & filmes)
+    string linha;
+    while (getline(baseCinema, linha))
     {
-        string linhaIgnorada;
-        if (getline(baseFilme, linhaIgnorada))
+        if (linha.empty())
         {
+            continue;
         }
+        stringstream ssLinhaTemporaria(linha);
+        Cinema cinema;
 
-        string linha;
-        while (getline(baseFilme, linha))
+        if (ssLinhaTemporaria >> cinema)
         {
-            if (linha.empty())
-            {
-                continue;
-            }
-            stringstream ssLinhaTemporaria(linha);
-            Filme filme;
-
-            if (ssLinhaTemporaria >> filme)
-            {
-                filmes.push_back(filme);
-            }
+            cinemas.push_back(cinema);
         }
     }
+}
+
+void tratarBaseFilme(stringstream &baseFilme, vector<Filme> &filmes)
+{
+    string linhaIgnorada;
+    if (getline(baseFilme, linhaIgnorada))
+    {
+    }
+
+    string linha;
+    while (getline(baseFilme, linha))
+    {
+        if (linha.empty())
+        {
+            continue;
+        }
+        stringstream ssLinhaTemporaria(linha);
+        Filme filme;
+
+        if (ssLinhaTemporaria >> filme)
+        {
+            filmes.push_back(filme);
+        }
+    }
+}

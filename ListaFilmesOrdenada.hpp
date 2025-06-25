@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include "Filme.hpp"
+#include "CriterioComparacao.hpp"
 class ListaFilmesOrdenada
 {
 public:
@@ -10,8 +11,8 @@ public:
     ListaFilmesOrdenada();
     ListaFilmesOrdenada(unsigned int tamanho);
 
-    void inserir(Filme* filme);
-    void ordenar();
+    void inserir(Filme *filme);
+    void ordenar(CriterioComparacao criterio);
 };
 
 #endif
