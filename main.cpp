@@ -49,53 +49,97 @@ int main()
     filmes.reserve(1300000);
     tratarBaseFilme(baseFilme, filmes);
 
-    // Fim do tempo de carregamento da base de dados
-    auto end = chrono::high_resolution_clock::now();
-    chrono::duration<double> duracaoSeg = end - start;
-
-
-    TabelaHashFilmesTipo tabFilmesTipo(10*20);
+    // Prepara estrutura auxiliar para busca por tipo
+    TabelaHashFilmesTipo tabFilmesTipo(10 * 20);
     for (unsigned int i = 0; i < filmes.size(); i++)
     {
         tabFilmesTipo.inserir(&filmes.at(i));
     }
-    cout << "Tempo de carregamento da base de dados: " << duracaoSeg.count() << endl;
-    bool isTipo = 0;
-    /*
-    bool isGenero = 0;
-    bool isDuracao = 0;
-    bool isAno = 0;
-    */
-    Busca busca;
-    cout << "+------------------------------+" << endl
-         << "Filtros de busca (0 - false, 1 - true)" << endl
-         << "E por tipo? ";
-    cin >> isTipo;
-    busca.setIsTipo(isTipo);
-    if (isTipo)
+
+    // Prepara estrutura auxiliar para busca por genero
+    TabelaHashFilmesGenero tabFilmesGenero(10 * 30);
+    for (unsigned int i = 0; i < filmes.size(); i++)
     {
-        cout << "Insira a quantidade de tipos: ";
-        int quantTipos;
-        string tipo;
-        cin >> quantTipos;
-        for (int i = 0; i < quantTipos; i++)
-        {
-            cout << "Insira o " << i+1 << "o tipo: ";
-            cin >> tipo;
-            busca.addTipo(tipo);
-        }
+        tabFilmesGenero.inserir(&filmes.at(i));
     }
-    /*
-    cout << "E por Genero? ";
-    cin >> isGenero;
-    */
-    busca.setIsGenero(0);
-    busca.setIsDuracao(0);
-    busca.setIsAno(0);
-    list<Filme *> listaTipo = busca.buscaTipo(tabFilmesTipo);
-    for (Filme *filme : listaTipo)
+
+    // Fim do tempo de carregamento da base de dados
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duracaoSeg = end - start;
+    cout << "Tempo de carregamento da base de dados: " << duracaoSeg.count() << endl;
+
+    short opcao = 0;
+    while (opcao < 7)
     {
-        cout << filme->getTipo();
+        Busca busca;
+        opcao = 0;
+        while (opcao >= 0 && opcao < 6)
+        {
+            cout << "+------------------------------+" << endl
+                 << "Filtros de busca" << endl
+                 << "1 - Inserir filtro por tipo;" << endl
+                 << "2 - Inserir filtro por Genero;" << endl
+                 << "3 - Inserir filtro por Duracao;" << endl
+                 << "4 - Inserir filtro por Ano;" << endl
+                 << "5 - Realizar busca" << endl
+                 << "6 - Reiniciar busca" << endl
+                 << "7 - Sair" << endl
+                 << endl
+                 << "Insira opcao: ";
+            cin >> opcao;
+            switch (opcao)
+            {
+            case 1:
+            {
+                busca.setIsTipo(1);
+                cout << "Insira a quantidade de tipos: ";
+                int quantTipos;
+                cin >> quantTipos;
+                string tipo;
+                for (int i = 0; i < quantTipos; i++)
+                {
+                    cout << "Insira o " << i + 1 << "o tipo: ";
+                    cin >> tipo;
+                    busca.addTipo(tipo);
+                }
+            }
+            break;
+            case 2:
+            {
+                busca.setIsGenero(1);
+                cout << "Insira a quantidade de generos: ";
+                int quantGeneros;
+                cin >> quantGeneros;
+                string genero;
+                for (int i = 0; i < quantGeneros; i++)
+                {
+                    cout << "Insira o " << i + 1 << "o genero: ";
+                    cin >> genero;
+                    busca.addGenero(genero);
+                }
+            }
+            break;
+            case 5:
+            {
+                list<Filme *> listaFilmes = busca.busca(tabFilmesTipo, tabFilmesGenero);
+                for (Filme *filme : listaFilmes)
+                {
+                    cout << *filme;
+                }
+            }
+            break;
+
+            default:
+                break;
+            }
+            /*
+            list<Filme *> listaTipo = busca.buscaTipo(tabFilmesTipo);
+            for (Filme *filme : listaTipo)
+            {
+                cout << filme->getTipo();
+            }
+                */
+        }
     }
     return 0;
 }

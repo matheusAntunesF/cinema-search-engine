@@ -1,4 +1,5 @@
 #include "TabelaHashFilmesTipo.hpp"
+#include "Filme.hpp"
 #include <vector>
 #include <list>
 #include <string>

@@ -7,10 +7,19 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <set>
 using namespace std;
 
 Busca::Busca()
 {
+    isTipo = 0;
+    isGenero = 0;
+    isDuracao = 0;
+    isAno = 0;
+    duracaoMin = 0;
+    duracaoMax = 0;
+    anoInicio = 0;
+    anoFim = 0;
 }
 
 // Construtor sobrecarregado
@@ -144,7 +153,25 @@ void Busca::addGenero(const string &genero)
 
 // Métodos de buscas
 
-list<Filme *> Busca::buscaTipo(TabelaHashFilmesTipo& tabFilmesTipo)
+void Busca::intersecionarListas(list<Filme *> &listaAuxiliar, list<Filme *> &listaFinal)
+{
+    // Se uma das listas estiver vazia, a interseção é vazia.
+    if (listaAuxiliar.empty() || listaFinal.empty()) {
+        listaFinal.clear();
+        return;
+    }
+
+    // Set com os ponteiros da listaAuxiliar para busca rápida (O(log N)).
+    set<Filme*> setAuxiliar(listaAuxiliar.begin(), listaAuxiliar.end());
+
+    // Remover elementos baseados em uma condição.
+    listaFinal.remove_if([&](Filme* filmeDaListaFinal) {
+        // count() retorna 1 se o elemento existe, 0 caso contrário
+        return setAuxiliar.count(filmeDaListaFinal) == 0;
+    });
+}
+
+list<Filme *> Busca::buscaTipo(TabelaHashFilmesTipo &tabFilmesTipo)
 {
     list<Filme *> filmesTipo, listaAuxiliar;
     for (string tipo : tipos)
@@ -154,4 +181,49 @@ list<Filme *> Busca::buscaTipo(TabelaHashFilmesTipo& tabFilmesTipo)
         filmesTipo.splice(filmesTipo.end(), listaAuxiliar);
     }
     return filmesTipo;
+}
+
+list<Filme *> Busca::buscaGenero(TabelaHashFilmesGenero &tabFilmesGenero)
+{
+    list<Filme *> filmesGenero;
+    list<Filme *> listaAuxiliar;
+    for (unsigned int pos = 0; pos < generos.size(); pos++)
+    {
+        unsigned int hash = tabFilmesGenero.calcularHash(generos.at(pos));
+        listaAuxiliar = tabFilmesGenero.buscar(hash);
+        if(pos == 0){  
+            filmesGenero.splice(filmesGenero.end(), listaAuxiliar);
+        } else{
+            intersecionarListas(listaAuxiliar, filmesGenero);
+        }
+    }
+    return filmesGenero;
+}
+
+list<Filme *> Busca::busca(TabelaHashFilmesTipo &tabFilmesTipo,
+                           TabelaHashFilmesGenero &tabFilmesGenero)
+{
+    list<Filme *> listaFilmes, listaAuxiliar;
+    if (isTipo)
+    {
+        listaAuxiliar = buscaTipo(tabFilmesTipo);
+        if(listaFilmes.size() == 0){
+            listaFilmes.splice(listaFilmes.end(), listaAuxiliar);
+        } else {
+            intersecionarListas(listaAuxiliar, listaFilmes);
+        }
+        listaAuxiliar.clear();
+    }
+    if (isGenero)
+    {
+        listaAuxiliar = buscaGenero(tabFilmesGenero);
+        if(listaFilmes.size() == 0){
+            listaFilmes.splice(listaFilmes.end(), listaAuxiliar);
+        } else{
+            intersecionarListas(listaAuxiliar, listaFilmes);
+        }
+        listaAuxiliar.clear();
+    }
+
+    return listaFilmes;
 }

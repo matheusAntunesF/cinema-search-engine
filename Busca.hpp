@@ -1,10 +1,11 @@
 #ifndef BUSCA_HPP
 #define BUSCA_HPP
-#include "Filme.hpp"
-#include "TabelaHashFilmesTipo.hpp"
 #include <vector>
 #include <string>
 #include <list>
+#include "Filme.hpp"
+#include "TabelaHashFilmesTipo.hpp"
+#include "TabelaHashFilmesGenero.hpp"
 
 class Busca
 {
@@ -56,9 +57,13 @@ public:
     void addTipo(const std::string &tipo);
     void addGenero(const std::string &genero);
 
+    void intersecionarListas(std::list<Filme *> &listaAuxiliar, std::list<Filme *> &listaFinal);
     // Métodos de buscas
+    std::list<Filme *> buscaTipo(TabelaHashFilmesTipo &tabFilmesTipo);
+    std::list<Filme *> buscaGenero(TabelaHashFilmesGenero &tabFilmesGenero);
 
-    std::list<Filme*> buscaTipo(TabelaHashFilmesTipo& tabFilmesTipo);
+    std::list<Filme *> busca(TabelaHashFilmesTipo &tabFilmesTipo,
+                             TabelaHashFilmesGenero &tabFilmesGenero);
 };
 
 #endif
